@@ -1,3 +1,7 @@
+# DAR App (Live)
+
+✅ **Open the app here:** https://1markclem1-hue.github.io/DAR_app/
+
 # Student Daily Checklist & Time-Management App (FERPA-Safe Master)
 
 ## Overview
