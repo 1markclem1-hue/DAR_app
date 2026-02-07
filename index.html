@@ -1,0 +1,1632 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Daily Checklist (Master)</title>
+
+  <style>
+    :root{
+      --bg:#07140f;
+      --card:#0b241b;
+      --text:#e8fff5;
+      --muted:#a7d3c3;
+      --line:rgba(232,255,245,.14);
+      --shadow: 0 12px 35px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:14px;
+      --accent:#34d399;
+      --bad:#fb7185;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:
+        radial-gradient(1200px 700px at 18% 8%, rgba(34,197,94,.18), transparent 55%),
+        radial-gradient(900px 600px at 92% 26%, rgba(52,211,153,.14), transparent 55%),
+        var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:22px 18px 10px;
+      max-width:1150px;
+      margin:0 auto;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .title{display:flex;flex-direction:column;gap:6px;}
+    h1{margin:0;font-size:22px;letter-spacing:.2px;}
+    .sub{color:var(--muted);font-size:13px;line-height:1.35;}
+
+    .top-controls{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
+    }
+    .pill{
+      display:flex;gap:8px;align-items:center;padding:10px 12px;
+      background:rgba(232,255,245,.06);
+      border:1px solid var(--line);
+      border-radius:999px;
+      box-shadow:0 2px 18px rgba(0,0,0,.18);
+    }
+    .pill label{font-size:12px;color:var(--muted);user-select:none;}
+    input[type="date"]{
+      background:transparent;border:none;color:var(--text);font-size:13px;outline:none;
+    }
+
+    main{
+      max-width:1150px;margin:0 auto;padding:12px 18px 26px;
+      display:grid;grid-template-columns: 1.15fr .85fr;gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns:1fr}
+      .top-controls{justify-content:flex-start}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(232,255,245,.06), rgba(0,0,0,.10));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .card-h{
+      padding:14px 14px 10px;border-bottom:1px solid var(--line);
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .card .card-h h2{margin:0;font-size:15px;letter-spacing:.2px;}
+    .card .card-h .small{color:var(--muted);font-size:12px;}
+    .card .card-b{padding:14px}
+
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    button{
+      border:none;border-radius:12px;padding:10px 12px;
+      background: rgba(232,255,245,.06);
+      border:1px solid rgba(232,255,245,.16);
+      color: var(--text);
+      cursor:pointer;font-weight:750;font-size:13px;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    button:hover{background: rgba(232,255,245,.09); border-color: rgba(232,255,245,.20);}
+    button:active{transform: translateY(1px);}
+    .primary{
+      background: linear-gradient(135deg, rgba(34,197,94,.25), rgba(52,211,153,.18));
+      border-color: rgba(232,255,245,.22);
+    }
+    .danger{background: rgba(251,113,133,.12);border-color: rgba(251,113,133,.28);}
+    .ghost{background: rgba(0,0,0,.18);}
+
+    .classes{display:flex;flex-direction:column;gap:10px;}
+    .row{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(232,255,245,.12);
+      border-radius:var(--radius2);
+      padding:12px 12px 10px;
+    }
+    .row-top{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap;
+    }
+    .row-title{
+      display:flex;flex-direction:column;gap:3px;min-width: 240px;
+    }
+    .row-title b{font-size:14px}
+    .row-title span{font-size:12px;color:var(--muted)}
+
+    .badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .badge{
+      font-size:11px;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(232,255,245,.06);
+      color: var(--muted);
+      user-select:none;
+      display:flex;gap:6px;align-items:center;
+    }
+    .badge strong{font-weight:900;color:var(--text);font-size:11px}
+
+    .checks{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;margin-bottom:10px;
+    }
+    @media (max-width: 520px){
+      .checks{grid-template-columns:1fr}
+      .row-title{min-width:auto}
+    }
+    .check{
+      display:flex;gap:10px;align-items:center;padding:10px 10px;
+      border-radius:12px;border:1px dashed rgba(232,255,245,.18);
+      background: rgba(232,255,245,.05);
+    }
+    .check input{transform: scale(1.2); accent-color: var(--accent);}
+    .check label{
+      display:flex;flex-direction:column;gap:2px;cursor:pointer;user-select:none;font-size:13px;
+    }
+    .check label small{color:var(--muted);font-size:11px}
+
+    textarea{
+      width:100%;resize:vertical;min-height:44px;max-height:140px;
+      padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);outline:none;
+      font-size:13px;line-height:1.35;
+    }
+    textarea::placeholder{color:rgba(232,255,245,.45)}
+
+    .period-timer{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(0,0,0,.20);
+      flex-wrap:wrap;
+    }
+    .pt-left{display:flex;flex-direction:column;gap:4px;}
+    .pt-left b{font-size:12px}
+    .pt-left span{font-size:12px;color:var(--muted)}
+    .pt-time{font-weight:900;font-size:18px;letter-spacing:.4px;}
+    .pt-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+    .pt-btns button{padding:9px 10px;font-size:12px;border-radius:10px;}
+
+    /* Focus timer */
+    .timer-wrap{display:grid;gap:12px;}
+    .timer-face{
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(232,255,245,.14);
+      border-radius: var(--radius2);
+      padding:14px;
+      display:grid;
+      gap:10px;
+    }
+    .timebig{font-size:44px;font-weight:950;letter-spacing:.6px;text-align:center;line-height:1.0;}
+    .timersub{color:var(--muted);font-size:12px;text-align:center;line-height:1.4;}
+    .progress{height:10px;background: rgba(232,255,245,.08);border-radius:999px;overflow:hidden;border:1px solid rgba(232,255,245,.12);}
+    .bar{height:100%;width:0%;background: linear-gradient(90deg, rgba(34,197,94,.92), rgba(52,211,153,.92));transition: width .2s linear;}
+    .timer-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .timer-controls button{padding:12px 12px}
+    .presets{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+    .preset{padding:9px 10px;font-size:12px;border-radius:999px;}
+    .inputs{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;}
+    .inputs input{
+      width:100%;padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .inputs label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+    .note{
+      font-size:12px;color:var(--muted);line-height:1.45;
+      background: rgba(232,255,245,.05);
+      border:1px solid rgba(232,255,245,.14);
+      border-radius: var(--radius2);
+      padding:10px 12px;
+    }
+
+    /* Share */
+    .share-grid{display:grid;gap:10px;}
+    .share-grid .field{display:grid;gap:6px;}
+    .share-grid label{font-size:11px;color:var(--muted);}
+    .share-grid input{
+      width:100%;padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media (max-width: 520px){ .share-actions{grid-template-columns:1fr} }
+    .toast{
+      display:none;margin-top:10px;
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(34,197,94,.35);
+      background: rgba(34,197,94,.12);
+      color: rgba(232,255,245,.95);
+      font-size:12px;line-height:1.4;
+    }
+    .toast.show{display:block;}
+
+    /* EOD */
+    .endcheck{display:grid;gap:10px;}
+    .endcheck .check{border-style:solid}
+    .sig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .sig input{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .sig label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+
+    /* Teacher Settings */
+    .settingsBox{
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(232,255,245,.14);
+      border-radius: var(--radius2);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .settingsRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){ .settingsRow{grid-template-columns:1fr;} }
+    .settingsRow label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+    .settingsRow input, .settingsRow textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .pinRow{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      justify-content:space-between;
+    }
+    .pinRow input{
+      width: 180px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .lockedTag{
+      font-size:12px;color:rgba(232,255,245,.75);
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(232,255,245,.06);
+      padding:6px 10px;border-radius:999px;
+    }
+    .hint{font-size:12px;color:rgba(232,255,245,.75);line-height:1.45;}
+
+    /* Weekly modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.60);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modal-backdrop.show{display:flex;}
+    .modal{
+      width:min(980px, 100%);
+      background: rgba(9,29,22,.98);
+      border:1px solid rgba(232,255,245,.16);
+      border-radius:18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modal-h{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(232,255,245,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .modal-h h3{margin:0;font-size:15px;}
+    .modal-b{padding:14px; display:grid; gap:12px;}
+    .panel{
+      border:1px solid rgba(232,255,245,.14);
+      border-radius:14px;
+      background: rgba(0,0,0,.22);
+      padding:12px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      color: rgba(232,255,245,.92);
+    }
+    th, td{
+      border:1px solid rgba(232,255,245,.14);
+      padding:8px 8px;
+      vertical-align:top;
+    }
+    th{background: rgba(232,255,245,.06); text-align:left;}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;}
+
+    @media print{
+      header, main, .footer{display:none !important;}
+      body{background:#fff;color:#000;}
+      .printOnly{display:block !important;}
+    }
+    .printOnly{display:none;}
+    .printPage{padding:14mm;font-family: Arial, Helvetica, sans-serif;color:#000;}
+    .pfTop{display:flex;justify-content:space-between;gap:10mm;align-items:flex-start;margin-bottom:6mm;}
+    .pfTitle{font-weight:700;font-size:14pt;line-height:1.2;}
+    .pfField{font-size:11pt;border:1px solid #000;padding:2mm 3mm;min-width:62mm;}
+    .pfTable{width:100%;border-collapse:collapse;font-size:10.5pt;margin-top:4mm;}
+    .pfTable th,.pfTable td{border:1px solid #000;padding:3mm 2.5mm;vertical-align:top;}
+    .pfTable th{background:#f0f0f0;text-align:left;}
+    .pfCheck{width:18mm;text-align:center;}
+    .pfTime{width:28mm;text-align:center;}
+    .pfEod{margin-top:6mm;border:1px solid #000;padding:3mm;font-size:10.5pt;}
+    .pfSigs{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:6mm;font-size:10.5pt;}
+    .pfLine{border-bottom:1px solid #000;height:9mm;}
+
+    .footer{
+      max-width:1150px;margin:0 auto;padding:0 18px 22px;
+      color:rgba(232,255,245,.60);
+      font-size:11px;line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="title">
+    <h1 id="appTitle">Student Daily Checklist</h1>
+    <div class="sub" id="appSub">Checklist + timers + share + print-to-PDF + weekly summary. (No identifying info included by default.)</div>
+  </div>
+
+  <div class="top-controls">
+    <div class="pill" title="Pick today’s date">
+      <label for="date">DATE</label>
+      <input id="date" type="date" />
+    </div>
+    <div class="btnbar">
+      <button class="primary" id="saveBtn" type="button">Save</button>
+      <button id="printBtn" type="button">Print</button>
+      <button class="primary" id="printFormBtn" type="button">Print Form (PDF)</button>
+      <button id="weeklyBtn" type="button">Weekly Summary</button>
+      <button id="teacherBtn" type="button">Teacher Settings</button>
+      <button class="danger" id="clearBtn" type="button">Clear Day</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-label="Daily assignments checklist">
+    <div class="card-h">
+      <h2 id="scheduleTitle">Schedule + Checklist</h2>
+      <div class="small">Done • Submitted • Needs Help • Class Timer</div>
+    </div>
+    <div class="card-b">
+      <div class="classes" id="classes"></div>
+    </div>
+  </section>
+
+  <aside class="card" aria-label="Timer, share, end-of-day, and teacher settings">
+    <div class="card-h">
+      <h2>Tools</h2>
+      <div class="small">Focus + communication + documentation</div>
+    </div>
+    <div class="card-b">
+      <div class="timer-wrap">
+
+        <!-- Focus Timer -->
+        <div class="timer-face">
+          <div class="timebig" id="timeBig">00:00</div>
+          <div class="timersub" id="timerLabel">Set a timer, then press Start.</div>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+
+          <div class="presets">
+            <button class="preset" type="button" data-min="3">3 min</button>
+            <button class="preset" type="button" data-min="5">5 min</button>
+            <button class="preset" type="button" data-min="10">10 min</button>
+            <button class="preset" type="button" data-min="15">15 min</button>
+            <button class="preset" type="button" data-min="20">20 min</button>
+          </div>
+
+          <div class="inputs">
+            <div>
+              <label for="mins">Minutes</label>
+              <input id="mins" type="number" min="0" max="180" value="5" />
+            </div>
+            <div>
+              <label for="secs">Seconds</label>
+              <input id="secs" type="number" min="0" max="59" value="0" />
+            </div>
+            <div>
+              <label for="purpose">What am I working on?</label>
+              <input id="purpose" type="text" placeholder="Example: finish worksheet" />
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="primary" id="startPauseBtn" type="button">Start</button>
+            <button id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="note">Tip: Say: <b>“I’m working on ____ for ____ minutes.”</b></div>
+        </div>
+
+        <!-- Share -->
+        <section class="card" style="box-shadow:none;">
+          <div class="card-h">
+            <h2>Share / Email Summary</h2>
+            <div class="small">No emails are pre-filled</div>
+          </div>
+          <div class="card-b">
+            <div class="share-grid">
+              <div class="field">
+                <label for="toEmail">To (optional)</label>
+                <input id="toEmail" type="email" placeholder="case.manager@school.org" />
+              </div>
+              <div class="field">
+                <label for="ccEmail">CC (optional)</label>
+                <input id="ccEmail" type="email" placeholder="teacher@school.org" />
+              </div>
+              <div class="share-actions">
+                <button class="primary" id="emailBtn" type="button">Create Email Draft</button>
+                <button id="copyBtn" type="button">Copy Summary</button>
+              </div>
+              <div class="toast" id="toast">Copied! Paste into an email or message.</div>
+              <div class="note">This tool does not send emails automatically; it only creates a draft.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- End of Day -->
+        <section class="card" style="box-shadow:none;">
+          <div class="card-h">
+            <h2>End-of-Day Check</h2>
+            <div class="small">Quick reflection</div>
+          </div>
+          <div class="card-b">
+            <div class="endcheck">
+              <div class="check">
+                <input id="eod_finished" type="checkbox">
+                <label for="eod_finished">I know what I finished</label>
+              </div>
+              <div class="check">
+                <input id="eod_turned" type="checkbox">
+                <label for="eod_turned">I know what I turned in</label>
+              </div>
+              <div class="check">
+                <input id="eod_still" type="checkbox">
+                <label for="eod_still">I know what I still need to do</label>
+              </div>
+            </div>
+
+            <div class="sig">
+              <div>
+                <label for="sig_student">Student initials (optional)</label>
+                <input id="sig_student" type="text" placeholder="Initials" />
+              </div>
+              <div>
+                <label for="sig_adult">Adult initials (optional)</label>
+                <input id="sig_adult" type="text" placeholder="Initials" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Teacher Settings (PIN Locked) -->
+        <section class="card" style="box-shadow:none;">
+          <div class="card-h">
+            <h2>Teacher Settings</h2>
+            <div class="small"><span id="lockTag" class="lockedTag">Locked</span></div>
+          </div>
+          <div class="card-b">
+            <div class="settingsBox">
+              <div class="pinRow">
+                <div style="display:grid;gap:6px;">
+                  <label for="pinInput" style="font-size:11px;color:var(--muted);">Enter Teacher PIN</label>
+                  <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" />
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                  <button class="primary" id="unlockBtn" type="button">Unlock</button>
+                  <button id="lockBtn" type="button">Lock</button>
+                </div>
+              </div>
+
+              <div class="hint">
+                Settings allow you to customize the class list and labels. Do not enter student names.
+              </div>
+
+              <div id="settingsPanel" style="display:none; gap:10px;">
+                <div class="settingsRow">
+                  <div>
+                    <label for="titleInput">App Title</label>
+                    <input id="titleInput" type="text" placeholder="Student Daily Checklist" />
+                  </div>
+                  <div>
+                    <label for="subInput">Subtitle</label>
+                    <input id="subInput" type="text" placeholder="Checklist + timers + documentation" />
+                  </div>
+                </div>
+
+                <div>
+                  <label for="classText">Class List (one per line)</label>
+                  <textarea id="classText" rows="7" placeholder="Period 1: Math&#10;Period 2: English&#10;..."></textarea>
+                </div>
+
+                <div class="settingsRow">
+                  <div>
+                    <label for="storageId">Local Storage ID (no names)</label>
+                    <input id="storageId" type="text" placeholder="studentA_periods_v1" />
+                  </div>
+                  <div>
+                    <label for="pinChange">Change Teacher PIN</label>
+                    <input id="pinChange" type="password" inputmode="numeric" placeholder="New PIN" />
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                  <button class="primary" id="saveSettingsBtn" type="button">Save Settings</button>
+                  <button class="danger" id="resetSettingsBtn" type="button">Reset to Default</button>
+                </div>
+
+                <div class="note">
+                  Recommended: use a neutral storage ID like <b>periods_v1</b> or <b>studentA_v1</b>. Avoid student names.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="footer">
+  This app stores data only in the browser on this device. Print Form → choose <b>Save as PDF</b> for documentation.
+</div>
+
+<!-- PRINT-ONLY FORM -->
+<section class="printOnly" id="printForm">
+  <div class="printPage">
+    <div class="pfTop">
+      <div>
+        <div class="pfTitle" id="pfTitle">Student Daily Checklist</div>
+        <div style="font-size:10.5pt;margin-top:2mm;">Student initials (optional): ________</div>
+      </div>
+      <div class="pfField">DATE: <span id="pfDate"></span></div>
+    </div>
+
+    <table class="pfTable">
+      <thead>
+        <tr>
+          <th style="width:26mm;">Class</th>
+          <th>Assignment / Notes</th>
+          <th class="pfCheck">Done?</th>
+          <th class="pfCheck">Submitted?</th>
+          <th class="pfCheck">Needs Help?</th>
+          <th class="pfTime">Time</th>
+        </tr>
+      </thead>
+      <tbody id="pfRows"></tbody>
+    </table>
+
+    <div class="pfEod">
+      <b>END-OF-DAY CHECK</b><br>
+      ☐ I know what I finished &nbsp;&nbsp;
+      ☐ I know what I turned in &nbsp;&nbsp;
+      ☐ I know what I still need to do
+    </div>
+
+    <div class="pfSigs">
+      <div>
+        <div>Student initials:</div>
+        <div class="pfLine"></div>
+      </div>
+      <div>
+        <div>Adult initials:</div>
+        <div class="pfLine"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Weekly Summary Modal -->
+<div class="modal-backdrop" id="weeklyModalBackdrop" role="dialog" aria-modal="true" aria-label="Weekly Summary">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="weeklyTitle">Weekly Summary</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+        <button id="weeklyCopyBtn" type="button">Copy Weekly Notes</button>
+        <button id="weeklyPrintBtn" type="button">Print Weekly</button>
+        <button class="danger" id="weeklyCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+    <div class="modal-b">
+      <div class="panel">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div><b>Start (Mon):</b> <span class="mono" id="weekStart"></span></div>
+          <div><b>End (Fri):</b> <span class="mono" id="weekEnd"></span></div>
+          <div><b>Days found:</b> <span class="mono" id="daysFound"></span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4 style="margin:0 0 8px 0;font-size:13px;">Weekly Totals by Class</h4>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Days w/ Data</th>
+                <th>Done</th>
+                <th>Submitted</th>
+                <th>Needs Help</th>
+                <th>Total Time (hh:mm:ss)</th>
+              </tr>
+            </thead>
+            <tbody id="weeklyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4 style="margin:0 0 8px 0;font-size:13px;">Weekly Notes (copy/paste)</h4>
+        <pre id="weeklyNotes" style="white-space:pre-wrap; margin:0; font-size:12px; line-height:1.45; color:rgba(232,255,245,.94);"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  /* =========================
+     DEFAULT (NON-IDENTIFYING)
+     ========================= */
+  const DEFAULT_SETTINGS = {
+    title: "Student Daily Checklist",
+    subtitle: "Checklist + timers + share + print-to-PDF + weekly summary. (No identifying info included by default.)",
+    storageId: "master_periods_v1",
+    classLines: [
+      "Period 1: Class",
+      "Period 2: Class",
+      "Period 3: Class",
+      "Period 4: Class",
+      "Period 5: Class",
+      "Period 6: Class",
+      "Period 7: Class"
+    ],
+  };
+
+  /* =========================
+     SECURITY NOTE (PIN)
+     =========================
+     This is a lightweight deterrent (not strong encryption).
+     It prevents students from casually editing Settings.
+  */
+  const PIN_KEY = "master_teacher_pin";
+  const SETTINGS_KEY = "master_app_settings";
+  const UNLOCK_KEY = "master_unlocked_until"; // timestamp
+
+  const DEFAULT_PIN = "1234"; // CHANGE THIS after first launch via Teacher Settings
+
+  // Elements
+  const classesEl = document.getElementById("classes");
+  const dateEl = document.getElementById("date");
+  const saveBtn = document.getElementById("saveBtn");
+  const printBtn = document.getElementById("printBtn");
+  const printFormBtn = document.getElementById("printFormBtn");
+  const weeklyBtn = document.getElementById("weeklyBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const teacherBtn = document.getElementById("teacherBtn");
+
+  // Focus timer
+  const timeBig = document.getElementById("timeBig");
+  const timerLabel = document.getElementById("timerLabel");
+  const bar = document.getElementById("bar");
+  const minsEl = document.getElementById("mins");
+  const secsEl = document.getElementById("secs");
+  const purposeEl = document.getElementById("purpose");
+  const startPauseBtn = document.getElementById("startPauseBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  // Share
+  const toEmailEl = document.getElementById("toEmail");
+  const ccEmailEl = document.getElementById("ccEmail");
+  const emailBtn = document.getElementById("emailBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const toast = document.getElementById("toast");
+
+  // EOD
+  const eod_finished = document.getElementById("eod_finished");
+  const eod_turned = document.getElementById("eod_turned");
+  const eod_still = document.getElementById("eod_still");
+  const sig_student = document.getElementById("sig_student");
+  const sig_adult = document.getElementById("sig_adult");
+
+  // Print
+  const pfTitle = document.getElementById("pfTitle");
+  const pfDate = document.getElementById("pfDate");
+  const pfRows = document.getElementById("pfRows");
+
+  // Weekly modal
+  const weeklyModalBackdrop = document.getElementById("weeklyModalBackdrop");
+  const weeklyCloseBtn = document.getElementById("weeklyCloseBtn");
+  const weeklyCopyBtn = document.getElementById("weeklyCopyBtn");
+  const weeklyPrintBtn = document.getElementById("weeklyPrintBtn");
+  const weeklyTitle = document.getElementById("weeklyTitle");
+  const weekStartEl = document.getElementById("weekStart");
+  const weekEndEl = document.getElementById("weekEnd");
+  const daysFoundEl = document.getElementById("daysFound");
+  const weeklyTableBody = document.getElementById("weeklyTableBody");
+  const weeklyNotesEl = document.getElementById("weeklyNotes");
+
+  // Teacher settings UI
+  const lockTag = document.getElementById("lockTag");
+  const pinInput = document.getElementById("pinInput");
+  const unlockBtn = document.getElementById("unlockBtn");
+  const lockBtn = document.getElementById("lockBtn");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const titleInput = document.getElementById("titleInput");
+  const subInput = document.getElementById("subInput");
+  const classText = document.getElementById("classText");
+  const storageIdInput = document.getElementById("storageId");
+  const pinChange = document.getElementById("pinChange");
+  const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+  const resetSettingsBtn = document.getElementById("resetSettingsBtn");
+
+  const appTitle = document.getElementById("appTitle");
+  const appSub = document.getElementById("appSub");
+
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const clampInt = (v, lo, hi) => {
+    const n = Number.parseInt(v, 10);
+    if (Number.isNaN(n)) return lo;
+    return Math.max(lo, Math.min(hi, n));
+  };
+  const formatMMSS = (totalSeconds) => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${pad2(m)}:${pad2(s)}`;
+  };
+  const formatHMS = (totalSeconds) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h}:${pad2(m)}:${pad2(s)}`;
+  };
+  const ymd = (d) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const fromYMD = (s) => {
+    const [Y,M,D] = (s || "").split("-").map(Number);
+    if(!Y || !M || !D) return null;
+    return new Date(Y, M-1, D, 12, 0, 0);
+  };
+
+  function getTeacherPin(){
+    return localStorage.getItem(PIN_KEY) || DEFAULT_PIN;
+  }
+  function setTeacherPin(pin){
+    localStorage.setItem(PIN_KEY, pin);
+  }
+
+  function loadSettings(){
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if(!raw) return structuredClone(DEFAULT_SETTINGS);
+    try{
+      const s = JSON.parse(raw);
+      return {
+        ...structuredClone(DEFAULT_SETTINGS),
+        ...s,
+        classLines: Array.isArray(s.classLines) ? s.classLines : structuredClone(DEFAULT_SETTINGS.classLines),
+      };
+    }catch(e){
+      return structuredClone(DEFAULT_SETTINGS);
+    }
+  }
+  function saveSettings(s){
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  }
+
+  let SETTINGS = loadSettings();
+
+  // Storage prefix (no names)
+  function LS_PREFIX(){ return `master:${SETTINGS.storageId}:`; }
+  const keyForDate = (dateStr) => LS_PREFIX() + (dateStr || "no-date");
+  function getSelectedKey(){ return keyForDate(dateEl.value || "no-date"); }
+
+  // Parse class lines into periods
+  function parseClassLines(lines){
+    const out = [];
+    let period = 1;
+    for(const line of lines){
+      const t = (line || "").trim();
+      if(!t) continue;
+      // Allow "Period 1: Math" or "1: Math" or just "Math"
+      const m = t.match(/^(?:period\s*)?(\d+)\s*:\s*(.+)$/i);
+      if(m){
+        out.push({ period: Number(m[1]), name: m[2].trim() });
+      }else{
+        out.push({ period: period, name: t });
+      }
+      period += 1;
+    }
+    // Ensure unique periods
+    const seen = new Set();
+    return out.filter(c => {
+      if(!c.period || seen.has(c.period)) return false;
+      seen.add(c.period);
+      return true;
+    }).sort((a,b)=>a.period-b.period);
+  }
+
+  let CLASS_LIST = parseClassLines(SETTINGS.classLines);
+
+  // Period timers
+  const periodTimers = {};
+  let activePeriod = null;
+  let ptIntervalId = null;
+
+  function initPeriodTimers(){
+    for(const c of CLASS_LIST){
+      periodTimers[c.period] = { elapsed: 0, running: false };
+    }
+  }
+  function stopActivePeriodTimer(){
+    if(ptIntervalId){ clearInterval(ptIntervalId); ptIntervalId = null; }
+    if(activePeriod !== null){
+      if(periodTimers[activePeriod]) periodTimers[activePeriod].running = false;
+      activePeriod = null;
+    }
+  }
+  function startPeriodTimer(period){
+    stopActivePeriodTimer();
+    activePeriod = period;
+    periodTimers[period].running = true;
+    ptIntervalId = setInterval(() => {
+      periodTimers[period].elapsed += 1;
+      renderPeriodTimer(period);
+      autoSaveQuiet();
+    }, 1000);
+    renderAllPeriodTimers();
+  }
+  function pausePeriodTimer(period){
+    if(activePeriod === period) stopActivePeriodTimer();
+    if(periodTimers[period]) periodTimers[period].running = false;
+    renderAllPeriodTimers();
+    autoSaveQuiet();
+  }
+  function resetPeriodTimer(period){
+    if(activePeriod === period) stopActivePeriodTimer();
+    if(periodTimers[period]){
+      periodTimers[period].elapsed = 0;
+      periodTimers[period].running = false;
+    }
+    renderAllPeriodTimers();
+    autoSaveQuiet();
+  }
+  function renderPeriodTimer(period){
+    const timeEl = document.getElementById(`pt_time_${period}`);
+    const btnEl = document.getElementById(`pt_btn_${period}`);
+    const statusEl = document.getElementById(`pt_status_${period}`);
+    if(!periodTimers[period]) return;
+    if(timeEl) timeEl.textContent = formatHMS(periodTimers[period].elapsed);
+    const isRunning = periodTimers[period].running;
+    if(btnEl) btnEl.textContent = isRunning ? "Pause" : "Start";
+    if(statusEl) statusEl.textContent = isRunning ? "Running now" : "Not running";
+  }
+  function renderAllPeriodTimers(){ for(const c of CLASS_LIST) renderPeriodTimer(c.period); }
+
+  function makeClassRow(c){
+    const idBase = `c${c.period}`;
+    const row = document.createElement("div");
+    row.className = "row";
+
+    row.innerHTML = `
+      <div class="row-top">
+        <div class="row-title">
+          <b>Period ${c.period}: ${escapeHtmlText(c.name)}</b>
+          <span>Write the assignment and check boxes.</span>
+        </div>
+        <div class="badges">
+          <div class="badge" data-badge="done">✅ <strong>Done</strong></div>
+          <div class="badge" data-badge="submitted">📤 <strong>Submitted</strong></div>
+          <div class="badge" data-badge="help">🆘 <strong>Needs Help</strong></div>
+        </div>
+      </div>
+
+      <div class="checks">
+        <div class="check">
+          <input id="${idBase}_done" type="checkbox" />
+          <label for="${idBase}_done">Done?<small>Finished during class?</small></label>
+        </div>
+        <div class="check">
+          <input id="${idBase}_submitted" type="checkbox" />
+          <label for="${idBase}_submitted">Submitted?<small>Turned in / uploaded?</small></label>
+        </div>
+        <div class="check">
+          <input id="${idBase}_help" type="checkbox" />
+          <label for="${idBase}_help">Needs help?<small>If stuck, check now.</small></label>
+        </div>
+      </div>
+
+      <textarea id="${idBase}_note" placeholder="Assignment / notes"></textarea>
+
+      <div class="period-timer">
+        <div class="pt-left">
+          <b>Class-period timer</b>
+          <span id="pt_status_${c.period}">Not running</span>
+        </div>
+        <div class="pt-time" id="pt_time_${c.period}">0:00:00</div>
+        <div class="pt-btns">
+          <button class="primary" id="pt_btn_${c.period}" type="button">Start</button>
+          <button class="ghost" id="pt_reset_${c.period}" type="button">Reset</button>
+        </div>
+      </div>
+    `;
+
+    const done = row.querySelector(`#${idBase}_done`);
+    const submitted = row.querySelector(`#${idBase}_submitted`);
+    const help = row.querySelector(`#${idBase}_help`);
+    const badgeDone = row.querySelector(`[data-badge="done"]`);
+    const badgeSub = row.querySelector(`[data-badge="submitted"]`);
+    const badgeHelp = row.querySelector(`[data-badge="help"]`);
+
+    const updateBadges = () => {
+      badgeDone.style.borderColor = done.checked ? "rgba(34,197,94,.55)" : "rgba(232,255,245,.14)";
+      badgeDone.style.background  = done.checked ? "rgba(34,197,94,.12)" : "rgba(232,255,245,.06)";
+
+      badgeSub.style.borderColor  = submitted.checked ? "rgba(52,211,153,.55)" : "rgba(232,255,245,.14)";
+      badgeSub.style.background   = submitted.checked ? "rgba(52,211,153,.12)" : "rgba(232,255,245,.06)";
+
+      badgeHelp.style.borderColor = help.checked ? "rgba(251,113,133,.60)" : "rgba(232,255,245,.14)";
+      badgeHelp.style.background  = help.checked ? "rgba(251,113,133,.12)" : "rgba(232,255,245,.06)";
+    };
+    [done, submitted, help].forEach(cb => cb.addEventListener("change", updateBadges));
+    updateBadges();
+
+    row.querySelector(`#pt_btn_${c.period}`).addEventListener("click", () => {
+      const isRunning = periodTimers[c.period]?.running;
+      if(isRunning) pausePeriodTimer(c.period);
+      else startPeriodTimer(c.period);
+    });
+    row.querySelector(`#pt_reset_${c.period}`).addEventListener("click", () => resetPeriodTimer(c.period));
+
+    renderPeriodTimer(c.period);
+    return row;
+  }
+
+  function buildRows(){
+    classesEl.innerHTML = "";
+    for(const c of CLASS_LIST){
+      classesEl.appendChild(makeClassRow(c));
+    }
+  }
+
+  function escapeHtmlText(s){
+    return (s || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function collectData(){
+    const classes = CLASS_LIST.map(c => {
+      const idBase = `c${c.period}`;
+      return {
+        period: c.period,
+        name: c.name,
+        done: document.getElementById(`${idBase}_done`).checked,
+        submitted: document.getElementById(`${idBase}_submitted`).checked,
+        help: document.getElementById(`${idBase}_help`).checked,
+        note: document.getElementById(`${idBase}_note`).value || "",
+        periodTimerSeconds: periodTimers[c.period]?.elapsed || 0
+      };
+    });
+    return {
+      date: dateEl.value || "",
+      classes,
+      eod: {
+        finished: eod_finished.checked,
+        turned: eod_turned.checked,
+        still: eod_still.checked,
+        sig_student: sig_student.value || "",
+        sig_adult: sig_adult.value || ""
+      },
+      focusTimer: {
+        mins: clampInt(minsEl.value, 0, 180),
+        secs: clampInt(secsEl.value, 0, 59),
+        purpose: purposeEl.value || ""
+      },
+      share: {
+        toEmail: toEmailEl.value || "",
+        ccEmail: ccEmailEl.value || ""
+      }
+    };
+  }
+
+  function applyData(data){
+    if(!data) return;
+    dateEl.value = data.date || dateEl.value;
+
+    for(const c of CLASS_LIST){
+      if(periodTimers[c.period]){
+        const item = (data.classes || []).find(x => x.period === c.period);
+        if(item){
+          periodTimers[c.period].elapsed = clampInt(item.periodTimerSeconds || 0, 0, 999999);
+          periodTimers[c.period].running = false;
+        }
+      }
+    }
+
+    for(const item of (data.classes || [])){
+      const idBase = `c${item.period}`;
+      const doneEl = document.getElementById(`${idBase}_done`);
+      const subEl  = document.getElementById(`${idBase}_submitted`);
+      const helpEl = document.getElementById(`${idBase}_help`);
+      const noteEl = document.getElementById(`${idBase}_note`);
+      if(doneEl) doneEl.checked = !!item.done;
+      if(subEl)  subEl.checked  = !!item.submitted;
+      if(helpEl) helpEl.checked = !!item.help;
+      if(noteEl) noteEl.value   = item.note || "";
+      doneEl && doneEl.dispatchEvent(new Event("change"));
+      subEl && subEl.dispatchEvent(new Event("change"));
+      helpEl && helpEl.dispatchEvent(new Event("change"));
+    }
+
+    const e = data.eod || {};
+    eod_finished.checked = !!e.finished;
+    eod_turned.checked   = !!e.turned;
+    eod_still.checked    = !!e.still;
+    sig_student.value    = e.sig_student || "";
+    sig_adult.value      = e.sig_adult || "";
+
+    const t = data.focusTimer || {};
+    minsEl.value = (typeof t.mins === "number") ? t.mins : minsEl.value;
+    secsEl.value = (typeof t.secs === "number") ? t.secs : secsEl.value;
+    purposeEl.value = t.purpose || "";
+
+    const s = data.share || {};
+    toEmailEl.value = s.toEmail || "";
+    ccEmailEl.value = s.ccEmail || "";
+
+    stopActivePeriodTimer();
+    renderAllPeriodTimers();
+    renderFocusTimer();
+  }
+
+  function save(){
+    localStorage.setItem(getSelectedKey(), JSON.stringify(collectData()));
+  }
+  function autoSaveQuiet(){
+    localStorage.setItem(getSelectedKey(), JSON.stringify(collectData()));
+  }
+  function load(){
+    const raw = localStorage.getItem(getSelectedKey());
+    if(!raw) return;
+    try{ applyData(JSON.parse(raw)); }catch(e){}
+  }
+  function clearDay(){
+    stopActivePeriodTimer();
+    localStorage.removeItem(getSelectedKey());
+    initPeriodTimers();
+    buildRows();
+    eod_finished.checked = false;
+    eod_turned.checked = false;
+    eod_still.checked = false;
+    sig_student.value = "";
+    sig_adult.value = "";
+    resetFocusTimer(true);
+    toast.classList.remove("show");
+  }
+
+  /* =========================
+     FOCUS TIMER
+     ========================= */
+  let focusInterval = null;
+  let focusTotal = 0;
+  let focusRemaining = 0;
+  let focusRunning = false;
+
+  function readFocusInputs(){
+    return clampInt(minsEl.value, 0, 180) * 60 + clampInt(secsEl.value, 0, 59);
+  }
+  function setFocusFromInputs(){
+    focusTotal = readFocusInputs();
+    focusRemaining = focusTotal;
+    renderFocusTimer();
+  }
+  function renderFocusTimer(){
+    timeBig.textContent = formatMMSS(Math.max(0, focusRemaining));
+    const pct = (focusTotal > 0) ? ((focusTotal - focusRemaining) / focusTotal) * 100 : 0;
+    bar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+    const purpose = (purposeEl.value || "").trim();
+    timerLabel.textContent = focusRunning
+      ? (purpose ? `Working on: ${purpose}` : "Working… keep going.")
+      : (purpose ? `Ready for: ${purpose}` : "Set a timer, then press Start.");
+    startPauseBtn.textContent = focusRunning ? "Pause" : "Start";
+  }
+  function focusTick(){
+    if(focusRemaining <= 0){
+      stopFocusTimer();
+      bar.style.width = "100%";
+      timeBig.textContent = "00:00";
+      timerLabel.textContent = "Time! ✅ Check your work.";
+      return;
+    }
+    focusRemaining -= 1;
+    renderFocusTimer();
+  }
+  function startFocusTimer(){
+    if(focusRunning) return;
+    if(focusRemaining <= 0) setFocusFromInputs();
+    if(focusTotal <= 0){
+      setFocusFromInputs();
+      if(focusTotal <= 0){
+        timerLabel.textContent = "Add minutes or seconds first.";
+        return;
+      }
+    }
+    focusRunning = true;
+    renderFocusTimer();
+    focusInterval = setInterval(focusTick, 1000);
+  }
+  function stopFocusTimer(){
+    focusRunning = false;
+    if(focusInterval) clearInterval(focusInterval);
+    focusInterval = null;
+    renderFocusTimer();
+  }
+  function resetFocusTimer(quiet=false){
+    stopFocusTimer();
+    setFocusFromInputs();
+    if(!quiet) {}
+  }
+  function toggleFocus(){ focusRunning ? stopFocusTimer() : startFocusTimer(); }
+
+  /* =========================
+     SHARE / EMAIL
+     ========================= */
+  function buildDailySummaryText(){
+    const date = dateEl.value || "(no date)";
+    const lines = [];
+    lines.push(`Daily Assignment Summary`);
+    lines.push(`Date: ${date}`);
+    lines.push(``);
+
+    for(const c of CLASS_LIST){
+      const idBase = `c${c.period}`;
+      const done = document.getElementById(`${idBase}_done`).checked;
+      const submitted = document.getElementById(`${idBase}_submitted`).checked;
+      const help = document.getElementById(`${idBase}_help`).checked;
+      const note = (document.getElementById(`${idBase}_note`).value || "").trim();
+      const t = periodTimers[c.period]?.elapsed || 0;
+
+      lines.push(`Period ${c.period}: ${c.name}`);
+      lines.push(`- Status: ${done ? "Done" : "Not done"} | ${submitted ? "Submitted" : "Not submitted"} | ${help ? "Needs help" : "No help flagged"}`);
+      lines.push(`- Time (class timer): ${formatHMS(t)}`);
+      if(note) lines.push(`- Notes: ${note}`);
+      lines.push(``);
+    }
+
+    lines.push(`End-of-day check:`);
+    lines.push(`- I know what I finished: ${eod_finished.checked ? "Yes" : "No"}`);
+    lines.push(`- I know what I turned in: ${eod_turned.checked ? "Yes" : "No"}`);
+    lines.push(`- I know what I still need to do: ${eod_still.checked ? "Yes" : "No"}`);
+    lines.push(``);
+
+    lines.push(`(This tool stores data locally on the device; no information is sent automatically.)`);
+    return lines.join("\n");
+  }
+
+  function openEmailDraft(){
+    save();
+    const to = (toEmailEl.value || "").trim();
+    const cc = (ccEmailEl.value || "").trim();
+    const subject = `Daily Assignments Summary (${dateEl.value || "no date"})`;
+    const body = buildDailySummaryText();
+
+    if(!to){
+      // If To is blank, just copy to clipboard prompt instead of failing
+      copyDailySummary();
+      alert("No 'To' email entered. Summary was copied so it can be pasted into an email or message.");
+      return;
+    }
+    const params = new URLSearchParams();
+    params.set("subject", subject);
+    params.set("body", body);
+    if(cc) params.set("cc", cc);
+    window.location.href = `mailto:${encodeURIComponent(to)}?${params.toString()}`;
+  }
+
+  async function copyDailySummary(){
+    save();
+    const txt = buildDailySummaryText();
+    try{
+      await navigator.clipboard.writeText(txt);
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }catch(e){
+      window.prompt("Copy this summary:", txt);
+    }
+  }
+
+  /* =========================
+     PRINT FORM (PDF)
+     ========================= */
+  function buildPrintForm(){
+    pfTitle.textContent = SETTINGS.title || DEFAULT_SETTINGS.title;
+    pfDate.textContent = dateEl.value || "";
+    pfRows.innerHTML = "";
+    for(const c of CLASS_LIST){
+      const idBase = `c${c.period}`;
+      const note = (document.getElementById(`${idBase}_note`).value || "").trim();
+      const done = document.getElementById(`${idBase}_done`).checked;
+      const submitted = document.getElementById(`${idBase}_submitted`).checked;
+      const help = document.getElementById(`${idBase}_help`).checked;
+      const t = periodTimers[c.period]?.elapsed || 0;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>Period ${c.period}<br><span style="font-size:9.5pt;">${escapeHtmlText(c.name)}</span></td>
+        <td>${escapeHtmlText(note).replaceAll("\n","<br>")}</td>
+        <td class="pfCheck">${done ? "✓" : ""}</td>
+        <td class="pfCheck">${submitted ? "✓" : ""}</td>
+        <td class="pfCheck">${help ? "✓" : ""}</td>
+        <td class="pfTime">${formatHMS(t)}</td>
+      `;
+      pfRows.appendChild(tr);
+    }
+  }
+  function printFormPDF(){
+    save();
+    buildPrintForm();
+    window.print();
+  }
+
+  /* =========================
+     WEEKLY SUMMARY
+     ========================= */
+  function getWeekRangeFor(dateStr){
+    const d = fromYMD(dateStr) || new Date();
+    const day = d.getDay(); // 0=Sun..6=Sat
+    const diffToMon = (day === 0) ? -6 : (1 - day);
+    const mon = new Date(d); mon.setDate(d.getDate() + diffToMon);
+    const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+    return { mon: ymd(mon), fri: ymd(fri) };
+  }
+  function listAllSavedDays(){
+    const out = [];
+    const prefix = LS_PREFIX();
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(prefix)){
+        const dateStr = k.replace(prefix, "");
+        if(/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) out.push(dateStr);
+      }
+    }
+    return out.sort();
+  }
+  function loadDay(dateStr){
+    const raw = localStorage.getItem(keyForDate(dateStr));
+    if(!raw) return null;
+    try{ return JSON.parse(raw); }catch(e){ return null; }
+  }
+
+  function openWeeklySummary(){
+    save();
+    const range = getWeekRangeFor(dateEl.value || ymd(new Date()));
+    const start = range.mon;
+    const end = range.fri;
+
+    weeklyTitle.textContent = `Weekly Summary (${start} to ${end})`;
+    weekStartEl.textContent = start;
+    weekEndEl.textContent = end;
+
+    const all = listAllSavedDays();
+    const inRange = all.filter(d => d >= start && d <= end);
+
+    const agg = {};
+    for(const c of CLASS_LIST){
+      agg[c.period] = { name: c.name, days: new Set(), done: 0, submitted: 0, help: 0, time: 0 };
+    }
+
+    let totalTime=0, totalDone=0, totalSubmitted=0, totalHelp=0, totalEntries=0;
+
+    for(const dateStr of inRange){
+      const day = loadDay(dateStr);
+      if(!day || !Array.isArray(day.classes)) continue;
+      for(const item of day.classes){
+        if(!agg[item.period]) continue;
+        agg[item.period].days.add(dateStr);
+        agg[item.period].done += item.done ? 1 : 0;
+        agg[item.period].submitted += item.submitted ? 1 : 0;
+        agg[item.period].help += item.help ? 1 : 0;
+        const t = clampInt(item.periodTimerSeconds || 0, 0, 999999);
+        agg[item.period].time += t;
+
+        totalTime += t;
+        totalDone += item.done ? 1 : 0;
+        totalSubmitted += item.submitted ? 1 : 0;
+        totalHelp += item.help ? 1 : 0;
+        totalEntries += 1;
+      }
+    }
+
+    daysFoundEl.textContent = String(inRange.length);
+
+    weeklyTableBody.innerHTML = "";
+    for(const c of CLASS_LIST){
+      const a = agg[c.period];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><b>Period ${c.period}</b><br><span style="color:rgba(232,255,245,.75)">${escapeHtmlText(a.name)}</span></td>
+        <td>${a.days.size}</td>
+        <td>${a.done}</td>
+        <td>${a.submitted}</td>
+        <td>${a.help}</td>
+        <td class="mono">${formatHMS(a.time)}</td>
+      `;
+      weeklyTableBody.appendChild(tr);
+    }
+
+    const notes = [];
+    notes.push(`WEEKLY PROGRESS MONITORING`);
+    notes.push(`Week: ${start} to ${end}`);
+    notes.push(`Days with data: ${inRange.length}`);
+    notes.push(``);
+    notes.push(`Totals:`);
+    notes.push(`- Done checks: ${totalDone}`);
+    notes.push(`- Submitted checks: ${totalSubmitted}`);
+    notes.push(`- Needs Help checks: ${totalHelp}`);
+    notes.push(`- Total class time tracked: ${formatHMS(totalTime)}`);
+    notes.push(``);
+    notes.push(`By period:`);
+    for(const c of CLASS_LIST){
+      const a = agg[c.period];
+      notes.push(`- Period ${c.period} (${a.name}): Done ${a.done}, Submitted ${a.submitted}, Help ${a.help}, Time ${formatHMS(a.time)}`);
+    }
+
+    weeklyNotesEl.textContent = notes.join("\n");
+    weeklyModalBackdrop.classList.add("show");
+  }
+
+  async function copyWeeklyNotes(){
+    const txt = weeklyNotesEl.textContent || "";
+    try{
+      await navigator.clipboard.writeText(txt);
+    }catch(e){
+      window.prompt("Copy weekly notes:", txt);
+    }
+  }
+
+  function printWeekly(){
+    const w = window.open("", "_blank");
+    if(!w){ alert("Pop-up blocked. Allow pop-ups to print weekly summary."); return; }
+    const safeNotes = (weeklyNotesEl.textContent || "").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    const html = `
+      <html><head><title>Weekly Summary</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;margin:18px;color:#000;}
+        h2{margin:0 0 10px 0;}
+        table{width:100%;border-collapse:collapse;font-size:10.5pt;}
+        th,td{border:1px solid #000;padding:6px;vertical-align:top;}
+        th{background:#f0f0f0;text-align:left;}
+        pre{white-space:pre-wrap;font-size:10.5pt;line-height:1.35;}
+      </style>
+      </head><body>
+        <h2>${weeklyTitle.textContent}</h2>
+        <div style="margin:0 0 12px 0;font-size:11pt;">Days found: ${daysFoundEl.textContent}</div>
+        <table>${document.querySelector(".panel table").innerHTML}</table>
+        <h3 style="margin:14px 0 6px 0;">Weekly Notes</h3>
+        <pre>${safeNotes}</pre>
+        <script>window.print();<\/script>
+      </body></html>`;
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+
+  /* =========================
+     TEACHER PIN + SETTINGS
+     ========================= */
+  function isUnlocked(){
+    const until = Number(localStorage.getItem(UNLOCK_KEY) || "0");
+    return Date.now() < until;
+  }
+  function setUnlocked(minutes=20){
+    const until = Date.now() + minutes * 60 * 1000;
+    localStorage.setItem(UNLOCK_KEY, String(until));
+  }
+  function lockNow(){
+    localStorage.removeItem(UNLOCK_KEY);
+  }
+  function refreshLockUI(){
+    const unlocked = isUnlocked();
+    lockTag.textContent = unlocked ? "Unlocked" : "Locked";
+    lockTag.style.borderColor = unlocked ? "rgba(34,197,94,.45)" : "rgba(232,255,245,.14)";
+    lockTag.style.background = unlocked ? "rgba(34,197,94,.12)" : "rgba(232,255,245,.06)";
+    settingsPanel.style.display = unlocked ? "grid" : "none";
+  }
+
+  function openTeacherSettings(){
+    // just scroll into view; panel shows only when unlocked
+    document.getElementById("teacherBtn").scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function populateSettingsForm(){
+    titleInput.value = SETTINGS.title || DEFAULT_SETTINGS.title;
+    subInput.value = SETTINGS.subtitle || DEFAULT_SETTINGS.subtitle;
+    storageIdInput.value = SETTINGS.storageId || DEFAULT_SETTINGS.storageId;
+    classText.value = (SETTINGS.classLines || DEFAULT_SETTINGS.classLines).join("\n");
+  }
+
+  function applySettingsToUI(){
+    appTitle.textContent = SETTINGS.title || DEFAULT_SETTINGS.title;
+    appSub.textContent = SETTINGS.subtitle || DEFAULT_SETTINGS.subtitle;
+    pfTitle.textContent = SETTINGS.title || DEFAULT_SETTINGS.title;
+
+    CLASS_LIST = parseClassLines(SETTINGS.classLines || DEFAULT_SETTINGS.classLines);
+
+    stopActivePeriodTimer();
+    for(const k in periodTimers) delete periodTimers[k];
+    initPeriodTimers();
+    buildRows();
+    load(); // load data for current date under current storageId
+  }
+
+  /* =========================
+     EVENTS
+     ========================= */
+  saveBtn.addEventListener("click", () => save());
+  printBtn.addEventListener("click", () => { save(); window.print(); });
+  printFormBtn.addEventListener("click", printFormPDF);
+  weeklyBtn.addEventListener("click", openWeeklySummary);
+
+  clearBtn.addEventListener("click", () => {
+    const ok = confirm("Clear everything for this date?");
+    if(ok) clearDay();
+  });
+
+  dateEl.addEventListener("change", () => {
+    stopActivePeriodTimer();
+    initPeriodTimers();
+    buildRows();
+    load();
+  });
+
+  document.addEventListener("change", (e) => {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    if(tag === "input" || tag === "textarea") save();
+  });
+
+  // Focus timer
+  document.querySelectorAll(".preset").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const min = clampInt(btn.dataset.min, 0, 180);
+      minsEl.value = min; secsEl.value = 0;
+      resetFocusTimer(true); save();
+    });
+  });
+  [minsEl, secsEl].forEach(el => {
+    el.addEventListener("change", () => {
+      minsEl.value = clampInt(minsEl.value, 0, 180);
+      secsEl.value = clampInt(secsEl.value, 0, 59);
+      if(!focusRunning) setFocusFromInputs();
+      save();
+    });
+  });
+  purposeEl.addEventListener("input", () => { renderFocusTimer(); save(); });
+  startPauseBtn.addEventListener("click", () => { toggleFocus(); save(); });
+  resetBtn.addEventListener("click", () => { resetFocusTimer(); save(); });
+
+  // Share
+  emailBtn.addEventListener("click", openEmailDraft);
+  copyBtn.addEventListener("click", copyDailySummary);
+
+  // Weekly modal
+  weeklyCloseBtn.addEventListener("click", () => weeklyModalBackdrop.classList.remove("show"));
+  weeklyModalBackdrop.addEventListener("click", (e) => {
+    if(e.target === weeklyModalBackdrop) weeklyModalBackdrop.classList.remove("show");
+  });
+  weeklyCopyBtn.addEventListener("click", copyWeeklyNotes);
+  weeklyPrintBtn.addEventListener("click", printWeekly);
+
+  // Teacher Settings
+  teacherBtn.addEventListener("click", () => {
+    // Scroll to settings section
+    document.querySelector("aside .card-b").scrollIntoView({behavior:"smooth", block:"end"});
+  });
+
+  unlockBtn.addEventListener("click", () => {
+    const pin = (pinInput.value || "").trim();
+    if(pin === getTeacherPin()){
+      setUnlocked(20);
+      pinInput.value = "";
+      populateSettingsForm();
+      refreshLockUI();
+      alert("Teacher Settings unlocked for 20 minutes.");
+    }else{
+      alert("Incorrect PIN.");
+    }
+  });
+
+  lockBtn.addEventListener("click", () => {
+    lockNow();
+    refreshLockUI();
+  });
+
+  saveSettingsBtn.addEventListener("click", () => {
+    if(!isUnlocked()){ alert("Settings are locked. Enter Teacher PIN."); return; }
+
+    const newTitle = (titleInput.value || "").trim() || DEFAULT_SETTINGS.title;
+    const newSub = (subInput.value || "").trim() || DEFAULT_SETTINGS.subtitle;
+    const newStorageId = (storageIdInput.value || "").trim() || DEFAULT_SETTINGS.storageId;
+
+    // SAFETY: prevent accidental student names in storageId
+    if(/\s/.test(newStorageId)){
+      alert("Storage ID should not include spaces. Use something like: studentA_v1");
+      return;
+    }
+
+    const lines = (classText.value || "").split("\n").map(s => s.trim()).filter(Boolean);
+    if(lines.length < 1){
+      alert("Please enter at least one class line.");
+      return;
+    }
+
+    SETTINGS = {
+      ...SETTINGS,
+      title: newTitle,
+      subtitle: newSub,
+      storageId: newStorageId,
+      classLines: lines
+    };
+    saveSettings(SETTINGS);
+
+    // Change PIN (optional)
+    const pinNew = (pinChange.value || "").trim();
+    if(pinNew){
+      if(!/^\d{4,8}$/.test(pinNew)){
+        alert("PIN should be 4–8 digits.");
+        return;
+      }
+      setTeacherPin(pinNew);
+      pinChange.value = "";
+    }
+
+    applySettingsToUI();
+    alert("Settings saved.");
+  });
+
+  resetSettingsBtn.addEventListener("click", () => {
+    if(!isUnlocked()){ alert("Settings are locked. Enter Teacher PIN."); return; }
+    const ok = confirm("Reset title, subtitle, class list, and storage ID to defaults?");
+    if(!ok) return;
+    SETTINGS = structuredClone(DEFAULT_SETTINGS);
+    saveSettings(SETTINGS);
+    applySettingsToUI();
+  });
+
+  /* =========================
+     INIT
+     ========================= */
+  // Ensure there is a PIN stored
+  if(!localStorage.getItem(PIN_KEY)) setTeacherPin(DEFAULT_PIN);
+
+  // Default date = today
+  dateEl.value = ymd(new Date());
+
+  // Apply settings to UI + build rows
+  applySettingsToUI();
+  setFocusFromInputs();
+  refreshLockUI();
+})();
+</script>
+</body>
+</html>
